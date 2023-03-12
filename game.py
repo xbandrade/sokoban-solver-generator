@@ -28,12 +28,25 @@ class Game:
         self.player_group = pygame.sprite.Group()
         self.goal_group = pygame.sprite.Group()
         self.player = None
+        self.puzzle_size = None
+        self.pad_x = 0
+        self.pad_y = 0
         self.load_floor()
         if type(self) == Game:
             self.load_puzzle()
 
     def __del__(self):
         self.clear_objects()
+
+    def get_matrix(self):
+        slice_x = slice(self.pad_x, self.pad_x + self.puzzle_size[1])
+        slice_y = slice(self.pad_y, self.pad_y + self.puzzle_size[0])
+        sliced = self.puzzle[slice_y, slice_x]
+        matrix = np.empty((self.puzzle_size), dtype='<U1')
+        for h in range(len(sliced)):
+            for w in range(len(sliced[0])):
+                matrix[h, w] = sliced[h, w].char
+        return matrix
 
     def print_puzzle(self):
         for h in range(self.height // 64):
@@ -67,8 +80,10 @@ class Game:
         try:
             with open(f'levels/lvl{self.level}.dat') as f:
                 lines = f.readlines()
-                pad_x = (self.width // 64 - len(lines[0].strip().split()) - 2) // 2
-                pad_y = (self.height // 64 - len(lines)) // 2
+                self.puzzle_size = (len(lines), len(lines[0].strip().split()))
+                pad_x = (self.width // 64 - self.puzzle_size[1] - 2) // 2
+                pad_y = (self.height // 64 - self.puzzle_size[0]) // 2
+                self.pad_x, self.pad_y = pad_x, pad_y
             with open(f'levels/lvl{self.level}.dat') as f:
                 for i, line in enumerate(f):
                     for j, c in enumerate(line.strip().split()):

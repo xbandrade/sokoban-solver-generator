@@ -1,6 +1,4 @@
 import random
-from audioop import reverse
-from math import ceil
 
 import numpy as np
 import pygame
@@ -24,12 +22,13 @@ def random_valid(width=10, height=10):
     return random.randrange(1, width - 1), random.randrange(1, height - 1)
 
 def visualize(reverse_game, puzzle_size):
+    pygame.event.pump()
     reverse_game.player.update(puzzle_size)
     reverse_game.floor_group.draw(reverse_game.window)
     reverse_game.goal_group.draw(reverse_game.window)
     reverse_game.object_group.draw(reverse_game.window)
     pygame.display.update()
-    pygame.time.delay(30)
+    pygame.time.delay(1)
 
 def generate(window, seed=3, visualizer=False):
     random.seed(seed)

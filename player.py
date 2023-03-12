@@ -129,10 +129,6 @@ class ReversePlayer(Player):
                 self.puzzle[reverse_target] = quick_chars[self.puzzle[reverse_target]]
                 self.puzzle[curr_pos] = '@' if self.puzzle[curr_pos] == '-' else '$'
             self.x, self.y = target[1], target[0]
-            if move == (1, 0):
-                self.image = self.down
-            elif move == (-1, 0):
-                self.image = self.up
 
     def update(self, puzzle_size):
         height, width = puzzle_size
