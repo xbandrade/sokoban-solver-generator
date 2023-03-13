@@ -5,6 +5,8 @@ import numpy as np
 
 
 def print_state(state, shape):
+	if not state:
+		return
 	m, n = shape
 	matrix = np.array(list(state)).reshape(m, n)
 	print(matrix)
@@ -12,13 +14,15 @@ def print_state(state, shape):
 
 def find_boxes_and_goals(state, shape):
 	_, width = shape
-	boxes, goals = [], []
+	boxes, goals, boxes_on_goal = [], [], []
 	for pos, char in enumerate(state):
 		if char == '@':
 			boxes.append((pos // width, pos % width))
 		elif char in 'X%':
 			goals.append((pos // width, pos % width))
-	return boxes, goals
+		elif char == '$':
+			boxes_on_goal.append((pos // width, pos % width))
+	return boxes, goals, boxes_on_goal
 
 def get_state(matrix):
 	return matrix.tobytes().decode('utf-8').replace('\x00', '')
@@ -27,48 +31,12 @@ def is_solved(state):
 	return '@' not in state
 
 
-def dijkstra(state, shape, pos):
-	height, width = shape
-	dijk = np.array([[float('inf') for _ in range(width)] for _ in range(height)])
-	dijk[pos] = 0
-	moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-	heap = [(0, pos)]
-	while heap:
-		distance, curr_pos = heappop(heap)
-		if distance > dijk[curr_pos]:
-			continue
-		for move in moves:
-			new_x, new_y = curr_pos[0] + move[0], curr_pos[1] + move[1]
-			new_pos = new_x, new_y
-			if (1 <= new_x < width - 1 and 
-       			1 <= new_y < height - 1 and 
-				state[new_x * width + new_y] not in '+-$'):
-				new_distance = distance + 1
-				if new_distance < dijk[new_pos]:
-					dijk[new_pos] = new_distance
-					heappush(heap, (new_distance, new_pos))
-	return dijk
-
-
-def dijkstra_sum(state, player_pos, shape):
-	height, width = shape
-	boxes, goals = find_boxes_and_goals(state, shape)
-	boxes_cost = player_cost = 0
-	distances = defaultdict(lambda: [])
-	for i in range(height):
-		for j in range(width):
-			if state[i * width + j] != '+':
-				distances[(i, j)] = dijkstra(state, shape, (i, j))
-	for box in boxes:
-		boxes_cost += min(distances[box][goal] for goal in goals)
-	player_cost = min(distances[player_pos][box] for box in boxes) if boxes else 0
-	return boxes_cost + player_cost
-
-
 def manhattan_sum(state, player_pos, shape):
+	height, width = shape
 	player_x, player_y = player_pos
-	boxes, goals = find_boxes_and_goals(state, shape)
-	boxes_cost = player_cost = 0
+	boxes, goals, _ = find_boxes_and_goals(state, shape)
+	boxes_cost = len(boxes) * height * width
+	player_cost = 0
 	for box_x, box_y in boxes:
 		boxes_cost += min(abs(box_x - goal_x) + abs(box_y - goal_y) 
 						  for goal_x, goal_y in goals)
@@ -77,12 +45,53 @@ def manhattan_sum(state, player_pos, shape):
 	return boxes_cost + player_cost
 
 
+def dijkstra(state, shape, box_pos=None, player_pos=None):
+	height, width = shape
+	dijk = np.array([[float('inf') for _ in range(width)] for _ in range(height)])
+	dijk[box_pos or player_pos] = 0
+	moves = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+	heap = [(0, box_pos or player_pos)]
+	obstacles = '+' if player_pos else '+@$'
+	while heap:
+		distance, curr_pos = heappop(heap)
+		if distance > dijk[curr_pos]:
+			continue
+		for move in moves:
+			new_x, new_y = curr_pos[0] + move[0], curr_pos[1] + move[1]
+			new_pos = new_x, new_y
+			if (1 <= new_x < height - 1 and
+				1 <= new_y < width - 1 and
+				state[new_x * width + new_y] not in obstacles):
+				new_distance = distance + 1
+				if new_distance < dijk[new_pos]:
+					dijk[new_pos] = new_distance
+					heappush(heap, (new_distance, new_pos))
+	return dijk
+
+
+def dijkstra_sum(state, player_pos, shape, distances):
+	height, width = shape
+	boxes, goals, boxes_on_goal = find_boxes_and_goals(state, shape)
+	boxes_cost = len(boxes) * height * width
+	player_cost = 0
+	# for i in range(height):
+	# 	for j in range(width):
+	# 		if state[i * width + j] not in '+-':
+	# 			distances[(i, j)] = dijkstra(state, shape, (i, j))
+	for box in boxes + boxes_on_goal:
+		distances[box] = dijkstra(state, shape, box)
+	distances[player_pos] = dijkstra(state, shape, player_pos=player_pos)
+	for box in boxes:
+		boxes_cost += min(distances[box][goal] for goal in goals)
+	player_cost = min(distances[player_pos][box] for box in boxes) if boxes else 0
+	return boxes_cost + player_cost
+
 
 def is_deadlock(state, shape):
 	if not state:
 		return False
 	height, width = shape
-	boxes, _ = find_boxes_and_goals(state, shape)
+	boxes, _, _ = find_boxes_and_goals(state, shape)
 	for bx, by in boxes:
 		box = bx * width + by
 		if ((state[box - 1] == '+' and state[box - width] == '+') or
@@ -122,6 +131,7 @@ def is_deadlock(state, shape):
 		return True
 	return False
 
+
 def can_move(state, shape, player_pos, move):
 	new_state = list(state)
 	x, y = player_pos
@@ -137,6 +147,7 @@ def can_move(state, shape, player_pos, move):
 	elif state[target1d] in '-X':
 		new_state[curr1d] = '-' if new_state[curr1d] == '*' else 'X'
 		new_state[target1d] = '*' if new_state[target1d] == '-' else '%'
+		move_cost = 3
 	elif state[target1d] in '@$':
 		if state[boxtarget1d] in '+@$':
 			return None, move_cost
@@ -144,6 +155,5 @@ def can_move(state, shape, player_pos, move):
 			new_state[boxtarget1d] = '@' if new_state[boxtarget1d] == '-' else '$'
 			new_state[target1d] = '*' if new_state[target1d] == '@' else '%'
 			new_state[curr1d] = '-' if new_state[curr1d] == '*' else 'X'
-			move_cost += 1
+			move_cost = 0 if new_state[boxtarget1d] == '$' else 2
 	return ''.join(new_state), move_cost
-

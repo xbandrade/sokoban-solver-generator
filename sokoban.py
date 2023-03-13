@@ -36,7 +36,7 @@ def play_solution(solution, game, widgets, show_solution, moves):
 		widgets['label'].draw()
 		widgets['seed'].draw()
 		widgets['visualizer'].draw()
-		widgets['moves_label'].set_text(f' Moves - {moves} ', 20)
+		widgets['moves_label'].set_moves(f' Moves - {moves} ', 20)
 		if show_solution:
 			widgets['paths'].draw_multiline()
 		pygame.display.update()
@@ -123,9 +123,7 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 				}
 			elif event.type == SOLVE_BFS_EVENT:
 				print('Finding a solution for the puzzle\n')
-				widgets['paths'].rect.width = 1
-				widgets['paths'].set_multiline('\n', 0)
-				widgets['paths'].solved = False
+				widgets['paths'].reset()
 				show_solution = True
 				start = time.time()
 				solution, depth = solve_bfs(
@@ -139,7 +137,7 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 					widgets['paths'].transparency = True
 					widgets['paths'].set_multiline(
 						f'Solution Found in {runtime}s!\n{solution}',
-						20, True
+						20,
 					)
 					moves = play_solution(solution, game, widgets, show_solution, moves)
 				else:
@@ -147,14 +145,11 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 					widgets['paths'].set_multiline(
 						'Solution Not Found!\n' + 
 						('Deadlock Found!' if depth < 0 else f'Depth {depth}'), 
-						20, True,
+						20,
 					)
 			elif event.type == SOLVE_ASTARMAN_EVENT:
 				print('Finding a solution for the puzzle\n')
-				widgets['paths'].rect.width = 1
-				widgets['paths'].transparency = False
-				widgets['paths'].set_multiline('\n', 0)
-				widgets['paths'].solved = False
+				widgets['paths'].reset()
 				show_solution = True
 				start = time.time()
 				solution, depth = solve_astar(
@@ -166,9 +161,10 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 				runtime = round(time.time() - start, 5)
 				if solution:
 					widgets['paths'].solved = True
+					widgets['paths'].transparency = True
 					widgets['paths'].set_multiline(
 						f'Solution Found in {runtime}s!\n{solution}',
-						20, True
+						20,
 					)
 					moves = play_solution(solution, game, widgets, show_solution, moves)
 				else:
@@ -176,14 +172,11 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 					widgets['paths'].set_multiline(
 						'Solution Not Found!\n' + 
 						('Deadlock Found!' if depth < 0 else f'Depth {depth}'), 
-						20, True,
+						20,
 					)
 			elif event.type == SOLVE_DIJKSTRA_EVENT:
 				print('Finding a solution for the puzzle\n')
-				widgets['paths'].rect.width = 1
-				widgets['paths'].transparency = False
-				widgets['paths'].set_multiline('\n', 0)
-				widgets['paths'].solved = False
+				widgets['paths'].reset()
 				show_solution = True
 				start = time.time()
 				solution, depth = solve_astar(
@@ -195,9 +188,10 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 				runtime = round(time.time() - start, 5)
 				if solution:
 					widgets['paths'].solved = True
+					widgets['paths'].transparency = True
 					widgets['paths'].set_multiline(
 						f'Solution Found in {runtime}s!\n{solution}',
-						20, True
+						20
 					)
 					moves = play_solution(solution, game, widgets, show_solution, moves)
 				else:
@@ -205,7 +199,7 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 					widgets['paths'].set_multiline(
 						'Solution Not Found!\n' + 
 						('Deadlock Found!' if depth < 0 else f'Depth {depth}'), 
-						20, True,
+						20,
 					)
 			elif event.type == pygame.KEYDOWN:
 				if event.key in (pygame.K_d, pygame.K_RIGHT):
@@ -223,7 +217,7 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 		widgets['label'].draw()
 		widgets['seed'].draw()
 		widgets['visualizer'].draw()
-		widgets['moves_label'].set_text(f' Moves - {moves} ', 20)
+		widgets['moves_label'].set_moves(f' Moves - {moves} ', 20)
 		if show_solution:
 			widgets['paths'].draw_multiline()
 		pygame.display.update()
@@ -300,7 +294,7 @@ def sidebar_widgets(window):
 		borderThickness=1, radius=2,
 		font=pygame.font.SysFont('Verdana', 14),
 	)
-	moves = Label(window, f' Moves - 0 ', 1055, 80, 20)
+	moves = Label(window, f' Moves - 0 ', 1055, 75, 20)
 	paths = Label(window, f'Solution Depth: 0\n', 64, 0, 20)
 	level_clear = LevelClear(window, f'Level Clear!')
 	return {

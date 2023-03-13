@@ -19,9 +19,25 @@ class Label:
 		self.max_lines = len(self.lines)
 		self.solved = False
 
+	def reset(self):
+		self.max_width = 1
+		self.total_height = 1
+		self.transparency = False
+		self.solved = False
+		self.max_lines = 0
+		self.set_multiline('\n', 0)
+
 	def set_text(self, new_text, font_size, color='black'):
 		self.font = pygame.font.SysFont('Verdana', font_size, bold=True)
 		self.image = self.font.render(new_text, 1, color)
+		self.draw()
+
+	def set_moves(self, new_text, font_size, color='black'):
+		self.font = pygame.font.SysFont('Verdana', font_size, bold=True)
+		self.image = self.font.render(new_text, 1, color)
+		_, _, w, h = self.image.get_rect()
+		self.rect.width = max(130, w)
+		self.rect.height = max(40, h)
 		self.draw()
 
 	def draw(self):
@@ -68,7 +84,7 @@ class Label:
 		transparent_surface = pygame.Surface(
 			(self.rect.width, self.rect.height), pygame.SRCALPHA
 		)
-		transparent_surface.set_alpha(140)
+		transparent_surface.set_alpha(110)
 		transparent_surface.fill((200, 0, 0) if not self.solved else (0, 255, 0))
 		if not self.transparency:
 			pygame.draw.rect(

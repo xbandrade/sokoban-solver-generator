@@ -1,5 +1,5 @@
 import time
-from collections import deque
+from collections import defaultdict, deque
 from heapq import heappop, heappush
 
 import numpy as np
@@ -17,8 +17,8 @@ def astar(matrix, player_pos, widget=None, visualizer=False, heuristic='manhatta
 	if heuristic == 'manhattan':
 		curr_cost = manhattan_sum(initial_state, player_pos, shape)
 	else:
-		curr_cost = dijkstra_sum(initial_state, player_pos, shape)
-	print_state(initial_state, shape)
+		distances = defaultdict(lambda: [])
+		curr_cost = dijkstra_sum(initial_state, player_pos, shape, distances)
 	seen = {None}
 	heap = []
 	heappush(heap, (initial_cost, curr_cost, initial_state, player_pos, curr_depth, ''))
@@ -42,7 +42,9 @@ def astar(matrix, player_pos, widget=None, visualizer=False, heuristic='manhatta
 			if heuristic == 'manhattan':
 				new_cost = manhattan_sum(new_state, new_pos, shape)
 			else:
-				new_cost = dijkstra_sum(new_state, new_pos, shape)
+				new_cost = dijkstra_sum(new_state, new_pos, shape, distances)
+			if new_cost == float('inf'):
+				continue
 			heappush(heap, (
 				move_cost + curr_cost,
 				new_cost,
@@ -55,15 +57,15 @@ def astar(matrix, player_pos, widget=None, visualizer=False, heuristic='manhatta
 				print(f'Solution found!\n\n{path + direction[move]}\nDepth {depth + 1}\n')
 				if widget and visualizer:
 					widget.solved = True
-					widget.set_multiline(f'Solution Found!\n{path + direction[move]}', 20, True)
+					widget.set_multiline(f'Solution Found!\n{path + direction[move]}', 20)
 					pygame.display.update()
 				return (path + direction[move], depth + 1)
 			if widget and visualizer:
-				widget.set_multiline(f'Solution Depth: {depth + 1}\n{path + direction[move]}', 20, True)
+				widget.set_multiline(f'Solution Depth: {depth + 1}\n{path + direction[move]}', 20)
 				pygame.display.update()
 	print(f'Solution not found!\n')
 	if widget and visualizer:
-		widget.set_multiline(f'Solution Not Found!\nDepth {depth + 1}', 20, True)
+		widget.set_multiline(f'Solution Not Found!\nDepth {depth + 1}', 20)
 		pygame.display.update()
 	return (None, -1 if not heap else depth + 1)
 
