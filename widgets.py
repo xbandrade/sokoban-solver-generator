@@ -48,8 +48,11 @@ class Label:
 		
 	def set_multiline(self, new_text, font_size, color='black'):
 		self.font = pygame.font.SysFont('Verdana', font_size, bold=True)
-		self.text = new_text
-		self.lines = new_text.split('\n')
+		self.new_lines = new_text.split('\n')
+		path_split = []
+		for i in range(0, len(self.new_lines[1]), 60):
+			path_split.append(self.new_lines[1][i:i + 60])
+		self.lines = [self.new_lines[0]] + path_split
 		self.images = [self.font.render(line, 1, color) for line in self.lines]
 		self.max_width = max(self.max_width, max(image.get_width() for image in self.images))
 		self.total_height = (sum(image.get_height() for image in self.images) + 
@@ -61,7 +64,7 @@ class Label:
 		transparent_surface = pygame.Surface(
 			(self.rect.width, self.rect.height), pygame.SRCALPHA
 		)
-		transparent_surface.set_alpha(160)
+		transparent_surface.set_alpha(140)
 		transparent_surface.fill((200, 0, 0) if not self.solved else (0, 255, 0))
 		if not self.transparency:
 			pygame.draw.rect(

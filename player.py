@@ -25,19 +25,19 @@ class Player(Sprite):
         self.x = x
         self.y = y
 
-    def update(self):
+    def update(self, key=None):
         keys = pygame.key.get_pressed()
         move = None
-        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+        if (key and key == 'R') or keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.image = self.right
             move = (64, 0)
-        elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
+        elif (key and key == 'L') or  keys[pygame.K_a] or keys[pygame.K_LEFT]:
             self.image = self.left
             move = (-64, 0)
-        elif keys[pygame.K_w] or keys[pygame.K_UP]:
+        elif (key and key == 'U') or keys[pygame.K_w] or keys[pygame.K_UP]:
             self.image = self.up
             move = (0, -64)
-        elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
+        elif (key and key == 'D') or keys[pygame.K_s] or keys[pygame.K_DOWN]:
             self.image = self.down
             move = (0, 64)
         if move:
