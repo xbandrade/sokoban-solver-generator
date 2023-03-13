@@ -26,20 +26,20 @@ class Player(Sprite):
         self.y = y
 
     def update(self, key=None):
-        keys = pygame.key.get_pressed()
         move = None
-        if (key and key == 'R') or keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            self.image = self.right
-            move = (64, 0)
-        elif (key and key == 'L') or  keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            self.image = self.left
-            move = (-64, 0)
-        elif (key and key == 'U') or keys[pygame.K_w] or keys[pygame.K_UP]:
-            self.image = self.up
-            move = (0, -64)
-        elif (key and key == 'D') or keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            self.image = self.down
-            move = (0, 64)
+        if key:
+            if key == 'R':
+                self.image = self.right
+                move = (64, 0)
+            elif key == 'L':
+                self.image = self.left
+                move = (-64, 0)
+            elif key == 'U':
+                self.image = self.up
+                move = (0, -64)
+            elif key == 'D':
+                self.image = self.down
+                move = (0, 64)
         if move:
             curr = self.y, self.x
             target = self.y + move[1] // 64, self.x + move[0] // 64
@@ -54,7 +54,6 @@ class Player(Sprite):
                     curr_elem.obj = None
                     target_elem.char = '*' if not target_elem.ground else '%'
                     target_elem.obj = self
-                    # self.game.print_puzzle()
                     return 1
         return 0
     

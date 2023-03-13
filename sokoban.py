@@ -1,4 +1,5 @@
 import random
+import time
 from multiprocessing.sharedctypes import Value
 
 import pygame
@@ -20,7 +21,7 @@ NEXT_EVENT = pygame.USEREVENT + 3
 RANDOM_GAME_EVENT = pygame.USEREVENT + 4
 SOLVE_BFS_EVENT = pygame.USEREVENT + 5
 SOLVE_ASTARMAN_EVENT = pygame.USEREVENT + 6
-SOLVE_ASTARDIJK_EVENT = pygame.USEREVENT + 7
+SOLVE_DIJKSTRA_EVENT = pygame.USEREVENT + 7
 random.seed(5)
 
 
@@ -43,8 +44,9 @@ def play_solution(solution, game, widgets, show_solution, moves):
 	return moves
 
 def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
-	moves = 0
+	moves = runtime = 0
 	show_solution = False
+	widgets['paths'].transparency = False
 	if random_game:
 		if not random_seed:
 			random_seed = random.randint(0, 99999)
@@ -125,14 +127,20 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 				widgets['paths'].set_multiline('\n', 0)
 				widgets['paths'].solved = False
 				show_solution = True
+				start = time.time()
 				solution, depth = solve_bfs(
 					game.get_matrix(), 
 					widget=widgets['paths'], 
 					visualizer=widgets['toggle'].getValue()
 				)
+				runtime = round(time.time() - start, 5)
 				if solution:
 					widgets['paths'].solved = True
-					widgets['paths'].set_multiline(f'Solution Found!\n{solution}', 20, True)
+					widgets['paths'].transparency = True
+					widgets['paths'].set_multiline(
+						f'Solution Found in {runtime}s!\n{solution}',
+						20, True
+					)
 					moves = play_solution(solution, game, widgets, show_solution, moves)
 				else:
 					widgets['paths'].solved = False
@@ -144,18 +152,24 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 			elif event.type == SOLVE_ASTARMAN_EVENT:
 				print('Finding a solution for the puzzle\n')
 				widgets['paths'].rect.width = 1
+				widgets['paths'].transparency = False
 				widgets['paths'].set_multiline('\n', 0)
 				widgets['paths'].solved = False
 				show_solution = True
+				start = time.time()
 				solution, depth = solve_astar(
 					game.get_matrix(), 
 					widget=widgets['paths'], 
 					visualizer=widgets['toggle'].getValue(),
 					heuristic='manhattan',
 				)
+				runtime = round(time.time() - start, 5)
 				if solution:
 					widgets['paths'].solved = True
-					widgets['paths'].set_multiline(f'Solution Found!\n{solution}', 20, True)
+					widgets['paths'].set_multiline(
+						f'Solution Found in {runtime}s!\n{solution}',
+						20, True
+					)
 					moves = play_solution(solution, game, widgets, show_solution, moves)
 				else:
 					widgets['paths'].solved = False
@@ -164,21 +178,27 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 						('Deadlock Found!' if depth < 0 else f'Depth {depth}'), 
 						20, True,
 					)
-			elif event.type == SOLVE_ASTARDIJK_EVENT:
+			elif event.type == SOLVE_DIJKSTRA_EVENT:
 				print('Finding a solution for the puzzle\n')
 				widgets['paths'].rect.width = 1
+				widgets['paths'].transparency = False
 				widgets['paths'].set_multiline('\n', 0)
 				widgets['paths'].solved = False
 				show_solution = True
+				start = time.time()
 				solution, depth = solve_astar(
 					game.get_matrix(), 
 					widget=widgets['paths'], 
 					visualizer=widgets['toggle'].getValue(),
 					heuristic='dijkstra',
 				)
+				runtime = round(time.time() - start, 5)
 				if solution:
 					widgets['paths'].solved = True
-					widgets['paths'].set_multiline(f'Solution Found!\n{solution}', 20, True)
+					widgets['paths'].set_multiline(
+						f'Solution Found in {runtime}s!\n{solution}',
+						20, True
+					)
 					moves = play_solution(solution, game, widgets, show_solution, moves)
 				else:
 					widgets['paths'].solved = False
@@ -187,7 +207,15 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 						('Deadlock Found!' if depth < 0 else f'Depth {depth}'), 
 						20, True,
 					)
-		moves += game.player.update()
+			elif event.type == pygame.KEYDOWN:
+				if event.key in (pygame.K_d, pygame.K_RIGHT):
+					moves += game.player.update(key='R')
+				elif event.key in (pygame.K_a, pygame.K_LEFT):
+					moves += game.player.update(key='L')
+				elif event.key in (pygame.K_w, pygame.K_UP):
+					moves += game.player.update(key='U')
+				elif event.key in (pygame.K_s, pygame.K_DOWN):
+					moves += game.player.update(key='D')
 		game.floor_group.draw(window)
 		game.goal_group.draw(window)
 		game.object_group.draw(window)
@@ -209,8 +237,6 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 				for event in pygame.event.get():
 					if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
 						wait = False
-		pygame.time.delay(100)
-	pygame.time.delay(100)
 	del game
 	print('Objects cleared!\n')
 	return {
@@ -260,10 +286,10 @@ def sidebar_widgets(window):
 		onClick=lambda: pygame.event.post(pygame.event.Event(SOLVE_ASTARMAN_EVENT)),
 		borderColor='black', borderThickness=2,
 	)
-	astardijk_button = Button(
-		window, 1055, 400, 130, 40, text='A* Dijkstra', radius=5,
+	dijk_button = Button(
+		window, 1055, 400, 130, 40, text='Dijkstra', radius=5,
 		font=pygame.font.SysFont('Verdana', 14, bold=True),
-		onClick=lambda: pygame.event.post(pygame.event.Event(SOLVE_ASTARDIJK_EVENT)),
+		onClick=lambda: pygame.event.post(pygame.event.Event(SOLVE_DIJKSTRA_EVENT)),
 		borderColor='black', borderThickness=2,
 	)
 	seed = Label(window, f'Seed', 1055, 190, 16)
@@ -275,7 +301,7 @@ def sidebar_widgets(window):
 		font=pygame.font.SysFont('Verdana', 14),
 	)
 	moves = Label(window, f' Moves - 0 ', 1055, 80, 20)
-	paths = Label(window, f'Solution Depth: 0\n', 64, 0, 20, True)
+	paths = Label(window, f'Solution Depth: 0\n', 64, 0, 20)
 	level_clear = LevelClear(window, f'Level Clear!')
 	return {
 		'restart': restart,
@@ -292,7 +318,7 @@ def sidebar_widgets(window):
 		'seedbox': seedbox,
 		'seed': seed,
 		'astarman': astarman_button,
-		'astardijk': astardijk_button,
+		'dijkstra': dijk_button,
 	}
 
 
@@ -317,7 +343,7 @@ def main():
 		reset = game_data.get('reset', -1)
 		random_game = game_data.get('random_game', False)
 		random_seed = game_data.get('random_seed')
-		level = reset if reset >= 0 else min(level + 1, 6)
+		level = reset if reset >= 0 else min(level + 1, 7)
 
 	
 if __name__ == '__main__':

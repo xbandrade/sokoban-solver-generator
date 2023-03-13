@@ -16,6 +16,7 @@ class Label:
 		self.rect = pygame.Rect(x, y, self.max_width + 10, self.total_height + 10)
 		self.window = window
 		self.transparency = transparency
+		self.max_lines = len(self.lines)
 		self.solved = False
 
 	def set_text(self, new_text, font_size, color='black'):
@@ -53,6 +54,9 @@ class Label:
 		for i in range(0, len(self.new_lines[1]), 60):
 			path_split.append(self.new_lines[1][i:i + 60])
 		self.lines = [self.new_lines[0]] + path_split
+		self.max_lines = max(self.max_lines, len(self.lines))
+		while len(self.lines) < self.max_lines:
+			self.lines.append('')
 		self.images = [self.font.render(line, 1, color) for line in self.lines]
 		self.max_width = max(self.max_width, max(image.get_width() for image in self.images))
 		self.total_height = (sum(image.get_height() for image in self.images) + 
@@ -69,7 +73,7 @@ class Label:
 		if not self.transparency:
 			pygame.draw.rect(
 				self.window,
-				pygame.Color('gray'),
+				(200, 0, 0) if not self.solved else (0, 255, 0),
 				(self.rect.x,
 				self.rect.y,
 				self.rect.width,
