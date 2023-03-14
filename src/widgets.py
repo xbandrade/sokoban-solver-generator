@@ -144,13 +144,12 @@ class MultilineLabel(Label):
 		self.rect = pygame.Rect(x, y, self.max_width + 10, self.total_height + 10)
 		self.max_lines = len(self.lines)
 
-	def reset(self):
-		self.max_width = 1
-		self.total_height = 1
+	def reset(self, text=''):
 		self.transparency = False
 		self.solved = False
-		self.max_lines = 0
-		self.set_text('\n', 0)
+		self.max_lines = 2
+		self.set_text(f'{text}\n', 20)
+		pygame.display.update()
 
 	def set_text(self, new_text, font_size, color='black'):
 		self.font = pygame.font.SysFont('Verdana', font_size, bold=True)

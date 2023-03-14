@@ -110,13 +110,29 @@ def is_deadlock(state, shape):
 	if not state or len(state) != height * width:
 		return False
 	boxes, _, _ = find_boxes_and_goals(state, shape)
-	for bx, by in boxes:
+	for bx, by in boxes:  # corner deadlock
 		box = bx * width + by
 		if ((state[box - 1] == '+' and state[box - width] == '+') or
-			(state[box + 1] == '+' and state[box + width] == '+')):
+			(state[box + 1] == '+' and state[box + width] == '+') or
+			(state[box + 1] == '+' and state[box - width] == '+') or
+			(state[box - 1] == '+' and state[box + width] == '+')):
 			return True
+	double_box_positions = [
+		(0, -1, -width, -width - 1),
+		(0, 1, -width, -width + 1),
+		(0, -1, width - 1, width),
+		(0, 1, width + 1, width),
+	]
+	for bx, by in boxes:  # double box deadlock
+		box = bx * width + by
+		for pos in double_box_positions:
+			pos_set = set()
+			for dir in pos:
+				pos_set.add(state[box + dir])
+			if pos_set in ({'@', '+'}, {'@'}, {'@', '$'}, {'@', '$', '+'}):
+				return True
 	box = goal = 0
-	for i in range(width + 1, 2 * width - 1):
+	for i in range(width + 1, 2 * width - 1):  # too many boxes deadlock
 		if state[i] == '@':
 			box += 1
 		elif state[i] in 'X%':

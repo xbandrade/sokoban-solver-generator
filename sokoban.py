@@ -95,7 +95,7 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 				}
 			elif event.type == SOLVE_BFS_EVENT:
 				print('Finding a solution for the puzzle\n')
-				widgets['paths'].reset()
+				widgets['paths'].reset('Solving with [BFS]')
 				show_solution = True
 				start = time.time()
 				solution, depth = solve_bfs(
@@ -121,7 +121,7 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 					)
 			elif event.type == SOLVE_ASTARMAN_EVENT:
 				print('Finding a solution for the puzzle\n')
-				widgets['paths'].reset()
+				widgets['paths'].reset('Solving with [A*]')
 				show_solution = True
 				start = time.time()
 				solution, depth = solve_astar(
@@ -148,7 +148,7 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 					)
 			elif event.type == SOLVE_DIJKSTRA_EVENT:
 				print('Finding a solution for the puzzle\n')
-				widgets['paths'].reset()
+				widgets['paths'].reset('Solving with [Dijkstra]')
 				show_solution = True
 				start = time.time()
 				solution, depth = solve_astar(

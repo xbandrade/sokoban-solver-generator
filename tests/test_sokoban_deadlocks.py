@@ -18,7 +18,6 @@ class SokobanDeadlockTest(SokobanMixin):
         del game
         os.remove('tmp.dat')
 
-    @skip
     def test_double_box_deadlock_is_detected(self):
         game, state = self.create_test_game(self.create_double_box_deadlock)
         self.assertTrue(is_deadlock(state, (game.puzzle_size)))
