@@ -1,16 +1,17 @@
 import time
-from collections import defaultdict, deque
+from collections import defaultdict
 from heapq import heappop, heappush
 
 import numpy as np
 import pygame
 
-from utils import (can_move, dijkstra_sum, get_state, is_deadlock, is_solved,
-                   manhattan_sum, print_state)
+from .utils import (can_move, dijkstra_sum, get_state, is_deadlock, is_solved,
+                    manhattan_sum, print_state)
 
 
 def astar(matrix, player_pos, widget=None, visualizer=False, heuristic='manhattan'):
 	print(f'A* - {heuristic.title()} Heuristic')
+	heur = '[A*]' if heuristic == 'manhattan' else '[Dijkstra]'
 	shape = matrix.shape
 	initial_state = get_state(matrix)
 	initial_cost = curr_depth = 0
@@ -30,7 +31,8 @@ def astar(matrix, player_pos, widget=None, visualizer=False, heuristic='manhatta
 		(0, 1): 'R',
 	}
 	while heap:
-		pygame.event.pump()
+		if widget:
+			pygame.event.pump()
 		_, curr_cost, state, pos, depth, path = heappop(heap)
 		seen.add(state)
 		for move in moves:
@@ -54,18 +56,18 @@ def astar(matrix, player_pos, widget=None, visualizer=False, heuristic='manhatta
 				path + direction[move],
 			))
 			if is_solved(new_state):
-				print(f'Solution found!\n\n{path + direction[move]}\nDepth {depth + 1}\n')
+				print(f'{heur} Solution found!\n\n{path + direction[move]}\nDepth {depth + 1}\n')
 				if widget and visualizer:
 					widget.solved = True
-					widget.set_multiline(f'Solution Found!\n{path + direction[move]}', 20)
+					widget.set_text(f'{heur} Solution Found!\n{path + direction[move]}', 20)
 					pygame.display.update()
 				return (path + direction[move], depth + 1)
 			if widget and visualizer:
-				widget.set_multiline(f'Solution Depth: {depth + 1}\n{path + direction[move]}', 20)
+				widget.set_text(f'{heur} Solution Depth: {depth + 1}\n{path + direction[move]}', 20)
 				pygame.display.update()
-	print(f'Solution not found!\n')
+	print(f'{heur} Solution not found!\n')
 	if widget and visualizer:
-		widget.set_multiline(f'Solution Not Found!\nDepth {depth + 1}', 20)
+		widget.set_text(f'{heur} Solution Not Found!\nDepth {depth + 1}', 20)
 		pygame.display.update()
 	return (None, -1 if not heap else depth + 1)
 

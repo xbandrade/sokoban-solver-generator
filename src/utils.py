@@ -1,7 +1,27 @@
-from collections import defaultdict
 from heapq import heappop, heappush
 
 import numpy as np
+import pygame
+import pygame_widgets
+
+
+def play_solution(solution, game, widgets, show_solution, moves):
+	for move in solution:
+		events = pygame.event.get()
+		moves += game.player.update(move)
+		game.floor_group.draw(game.window)
+		game.goal_group.draw(game.window)
+		game.object_group.draw(game.window)
+		pygame_widgets.update(events)
+		widgets['label'].draw()
+		widgets['seed'].draw()
+		widgets['visualizer'].draw()
+		widgets['moves_label'].set_moves(f' Moves - {moves} ', 20)
+		if show_solution:
+			widgets['paths'].draw()
+		pygame.display.update()
+		pygame.time.delay(110)
+	return moves
 
 
 def print_state(state, shape):
@@ -24,8 +44,10 @@ def find_boxes_and_goals(state, shape):
 			boxes_on_goal.append((pos // width, pos % width))
 	return boxes, goals, boxes_on_goal
 
+
 def get_state(matrix):
 	return matrix.tobytes().decode('utf-8').replace('\x00', '')
+
 
 def is_solved(state):
 	return '@' not in state
@@ -74,10 +96,6 @@ def dijkstra_sum(state, player_pos, shape, distances):
 	boxes, goals, boxes_on_goal = find_boxes_and_goals(state, shape)
 	boxes_cost = len(boxes) * height * width
 	player_cost = 0
-	# for i in range(height):
-	# 	for j in range(width):
-	# 		if state[i * width + j] not in '+-':
-	# 			distances[(i, j)] = dijkstra(state, shape, (i, j))
 	for box in boxes + boxes_on_goal:
 		distances[box] = dijkstra(state, shape, box)
 	distances[player_pos] = dijkstra(state, shape, player_pos=player_pos)
@@ -88,9 +106,9 @@ def dijkstra_sum(state, player_pos, shape, distances):
 
 
 def is_deadlock(state, shape):
-	if not state:
-		return False
 	height, width = shape
+	if not state or len(state) != height * width:
+		return False
 	boxes, _, _ = find_boxes_and_goals(state, shape)
 	for bx, by in boxes:
 		box = bx * width + by

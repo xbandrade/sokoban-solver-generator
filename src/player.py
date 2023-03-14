@@ -4,7 +4,7 @@ from collections import defaultdict
 import pygame
 from pygame.sprite import Sprite
 
-from box import Box, Obstacle
+from .box import Box, Obstacle
 
 
 class Player(Sprite):
@@ -60,7 +60,6 @@ class Player(Sprite):
     def __del__(self):
         self.kill()
 
-    
 
 class ReversePlayer(Player):
     """A player that can only pull boxes"""
@@ -70,7 +69,6 @@ class ReversePlayer(Player):
         self.curr_state = ''
         self.states = defaultdict(int)
         self.prev_move = (0, 0)
-
 
     def print_puzzle(self, matrix=None):
         matrix = matrix if matrix is not None else self.game.puzzle
@@ -92,42 +90,6 @@ class ReversePlayer(Player):
                 if self.game.puzzle[row, col]:
                     state += str(self.game.puzzle[row, col])
         return state 
-
-    def quick_update(self, boxes_seen):
-        quick_chars = {
-            '*': '-',
-            '%': 'X',
-            '+': '*',
-            '-': '*',
-            'X': '%',
-            '@': '-',
-            '$': 'X',
-        }
-        moves_tuples = [(1, 0), (-1, 0), (0, -1), (0, 1)]
-        moves = random.choices(
-            moves_tuples, 
-            weights=[0.1 if m == self.prev_move else 1 for m in moves_tuples],
-            k=1
-        )
-        state = self.get_state()
-        for move in moves:
-            self.states.add(state)
-            new_y, new_x = self.y + move[0], self.x + move[1]
-            target = new_y, new_x
-            curr_pos = self.y, self.x
-            if (0 in (new_x, new_y) or 
-                new_x >= len(self.puzzle[0]) - 1 or 
-                new_y >= len(self.puzzle) - 1 or
-                self.puzzle[target] in '@$'):
-                continue
-            self.prev_move = -move[0], -move[1]
-            reverse_target = self.y - move[0], self.x - move[1]
-            self.puzzle[curr_pos] = quick_chars[self.puzzle[curr_pos]]
-            self.puzzle[target] = quick_chars[self.puzzle[target]]
-            if self.puzzle[reverse_target] in '@$':
-                self.puzzle[reverse_target] = quick_chars[self.puzzle[reverse_target]]
-                self.puzzle[curr_pos] = '@' if self.puzzle[curr_pos] == '-' else '$'
-            self.x, self.y = target[1], target[0]
 
     def update(self, puzzle_size):
         height, width = puzzle_size

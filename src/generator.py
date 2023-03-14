@@ -3,7 +3,7 @@ import random
 import numpy as np
 import pygame
 
-from game import ReverseGame
+from .game import ReverseGame
 
 MIN_W = 6
 MIN_H = 6
@@ -30,7 +30,8 @@ def visualize(reverse_game, puzzle_size):
     pygame.display.update()
     pygame.time.delay(1)
 
-def generate(window, seed=3, visualizer=False):
+def generate(window=None, seed=3, visualizer=False, path=None):
+    path = path or 'levels/lvl0.dat'
     random.seed(seed)
     valid = False
     while not valid:
@@ -41,7 +42,6 @@ def generate(window, seed=3, visualizer=False):
         boxes_seen = set()
         player_pos = random_valid(width, height)
         puzzle_size = height, width
-        # player = ReversePlayer(x=player_pos[0], y=player_pos[1], puzzle=puzzle)
         puzzle[player_pos[1], player_pos[0]] = '*'
         boxes_created = 0
         while boxes_created < boxes:
@@ -70,7 +70,7 @@ def generate(window, seed=3, visualizer=False):
         player.kill()
         out_of_place_boxes = np.sum([str(x) == '@' for x in matrix.flatten()])
         if out_of_place_boxes >= boxes // 2:
-            np.savetxt('levels/lvl0.dat', matrix, fmt='%s')
+            np.savetxt(path, matrix, fmt='%s')
             valid = True
             del reverse_game
         else:

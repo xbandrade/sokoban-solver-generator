@@ -4,7 +4,7 @@ from collections import deque
 import numpy as np
 import pygame
 
-from utils import can_move, get_state, is_deadlock, is_solved, print_state
+from .utils import can_move, get_state, is_deadlock, is_solved, print_state
 
 
 def bfs(matrix, player_pos, widget=None, visualizer=False):
@@ -23,11 +23,12 @@ def bfs(matrix, player_pos, widget=None, visualizer=False):
 		(0, 1): 'R',
 	}
 	while q:
-		pygame.event.pump()
+		if widget:
+			pygame.event.pump()
 		state, pos, depth, path = q.popleft()
-		if depth != curr_depth:
-			print(f'Depth: {depth}')
-			curr_depth = depth
+		# if depth != curr_depth:
+		# 	print(f'Depth: {depth}')
+		# 	curr_depth = depth
 		seen.add(state)
 		for move in moves:
 			new_state, _ = can_move(state, shape, pos, move)
@@ -41,20 +42,21 @@ def bfs(matrix, player_pos, widget=None, visualizer=False):
 				path + direction[move],
 			))
 			if is_solved(new_state):
-				print(f'Solution found!\n\n{path + direction[move]}\nDepth {depth + 1}\n')
+				print(f'[BFS] Solution found!\n\n{path + direction[move]}\nDepth {depth + 1}\n')
 				if widget and visualizer:
 					widget.solved = True
-					widget.set_multiline(f'Solution Found!\n{path + direction[move]}', 20)
+					widget.set_text(f'[BFS] Solution Found!\n{path + direction[move]}', 20)
 					pygame.display.update()
 				return (path + direction[move], depth + 1)
 			if widget and visualizer:
-				widget.set_multiline(f'Solution Depth: {depth + 1}\n{path + direction[move]}', 20)
+				widget.set_text(f'[BFS] Solution Depth: {depth + 1}\n{path + direction[move]}', 20)
 				pygame.display.update()
-	print(f'Solution not found!\n')
+	print(f'[BFS] Solution not found!\n')
 	if widget and visualizer:
-		widget.set_multiline(f'Solution Not Found!\nDepth {depth + 1}', 20)
+		widget.set_text(f'[BFS] Solution Not Found!\nDepth {depth + 1}', 20)
 		pygame.display.update()
 	return (None, -1 if not q else depth + 1)
+
 
 def solve_bfs(puzzle, widget=None, visualizer=False):
 	matrix = puzzle

@@ -1,9 +1,11 @@
 import numpy as np
 import pygame
 
-from box import Box, Obstacle
-from floor import Floor, Goal
-from player import Player, ReversePlayer
+from src.utils import get_state
+
+from .box import Box, Obstacle
+from .floor import Floor, Goal
+from .player import Player, ReversePlayer
 
 
 class PuzzleElement:
@@ -16,7 +18,7 @@ class PuzzleElement:
         return self.char
 
 class Game:
-    def __init__(self, window, width=1216, height=640, level=None, seed=None):
+    def __init__(self, window=None, width=1216, height=640, level=None, seed=None, path=None):
         self.seed = seed
         self.window = window
         self.level = level
@@ -31,6 +33,7 @@ class Game:
         self.puzzle_size = None
         self.pad_x = 0
         self.pad_y = 0
+        self.path = path or f'levels/lvl{level}.dat'
         self.load_floor()
         if type(self) == Game:
             self.load_puzzle()
@@ -47,6 +50,9 @@ class Game:
             for w in range(len(sliced[0])):
                 matrix[h, w] = sliced[h, w].char
         return matrix
+    
+    def get_curr_state(self):
+        return get_state(self.get_matrix())
 
     def print_puzzle(self):
         for h in range(self.height // 64):
@@ -78,13 +84,13 @@ class Game:
 
     def load_puzzle(self):
         try:
-            with open(f'levels/lvl{self.level}.dat') as f:
+            with open(self.path) as f:
                 lines = f.readlines()
                 self.puzzle_size = (len(lines), len(lines[0].strip().split()))
                 pad_x = (self.width // 64 - self.puzzle_size[1] - 2) // 2
                 pad_y = (self.height // 64 - self.puzzle_size[0]) // 2
                 self.pad_x, self.pad_y = pad_x, pad_y
-            with open(f'levels/lvl{self.level}.dat') as f:
+            with open(self.path) as f:
                 for i, line in enumerate(f):
                     for j, c in enumerate(line.strip().split()):
                         new_elem = PuzzleElement(c)
@@ -122,7 +128,7 @@ class Game:
 
 
 class ReverseGame(Game):
-    def __init__(self, window, width=1216, height=640, level=None, seed=None):
+    def __init__(self, window=None, width=1216, height=640, level=None, seed=None):
         super().__init__(window, width, height, level, seed)
         self.pad_x = 0
         self.pad_y = 0
