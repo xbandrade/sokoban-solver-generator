@@ -1,10 +1,10 @@
 # 📦 Sokoban Solver and Generator
 
-[README pt-BR](https://github.com/xbandrade/sokoban-solver-generator/blob/main/README-pt-BR.md)
+🗒️ [README pt-BR](https://github.com/xbandrade/sokoban-solver-generator/blob/main/README-pt-BR.md)
 
-Video showing the game mechanics, the generator and the solver: [Sokoban Generator and Solver](https://www.youtube.com/watch?v=l0BHKkoViII)
+▶️ Video showing the game mechanics, the generator and the solver: [Sokoban Generator and Solver](https://www.youtube.com/watch?v=l0BHKkoViII)
 
-This is a Sokoban puzzle generator and solver that uses BFS, A* and Dijkstra algorithms.
+This is a Sokoban puzzle generator and solver that uses BFS, A* and Dijkstra search algorithms.
 
 
 
