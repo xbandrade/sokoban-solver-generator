@@ -1,6 +1,6 @@
 # 📦 Solucionador e Gerador Sokoban
 
-Vídeo mostrando as mecânicas do jogo, o gerador e o solucionador: [Sokoban Generator and Solver](https://www.youtube.com/watch?v=l0BHKkoViII)
+▶️ Vídeo mostrando as mecânicas do jogo, o gerador e o solucionador: [Sokoban Generator and Solver](https://www.youtube.com/watch?v=l0BHKkoViII)
 
 Este é um gerador de puzzles e solucionador de puzzles Sokoban que utiliza os algoritmos de busca BFS, A* e Dijkstra.
 
