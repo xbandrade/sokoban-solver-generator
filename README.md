@@ -4,7 +4,7 @@
 
 Video showing the game mechanics, the generator and the solver: [Sokoban Generator and Solver](https://www.youtube.com/watch?v=l0BHKkoViII)
 
-This is a Sokoban puzzle generator and solver using BFS, A* and Dijkstra algorithms.
+This is a Sokoban puzzle generator and solver that uses BFS, A* and Dijkstra algorithms.
 
 
 
