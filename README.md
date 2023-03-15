@@ -2,9 +2,10 @@
 
 [README pt-BR](https://github.com/xbandrade/sokoban-solver-generator/blob/main/README-pt-BR.md)
 
-A Sokoban puzzle generator and solver using BFS, A* and Dijkstra algorithms.
-
 Video showing the game mechanics, the generator and the solver: [Sokoban Generator and Solver](https://www.youtube.com/watch?v=l0BHKkoViII)
+
+This is a Sokoban puzzle generator and solver using BFS, A* and Dijkstra algorithms.
+
 
 
 `Sokoban` is a puzzle game in which the player pushes boxes around in a warehouse, trying to get every box to a goal.
