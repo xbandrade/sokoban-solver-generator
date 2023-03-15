@@ -20,7 +20,7 @@ def play_solution(solution, game, widgets, show_solution, moves):
 		if show_solution:
 			widgets['paths'].draw()
 		pygame.display.update()
-		pygame.time.delay(110)
+		pygame.time.delay(130)
 	return moves
 
 

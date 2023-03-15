@@ -12,7 +12,7 @@ from src.generator import generate
 from src.utils import play_solution
 from src.widgets import sidebar_widgets
 
-random.seed(5)
+random.seed(6)
 
 
 def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
@@ -54,7 +54,7 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
 				return {
 					'keep_playing': True,
 					'reset': level, 
-					'random_game': False,
+					'random_game': random_game,
 					'random_seed': random_seed,
 				}
 			elif event.type == PREVIOUS_EVENT:

@@ -145,6 +145,7 @@ class MultilineLabel(Label):
 		self.max_lines = len(self.lines)
 
 	def reset(self, text=''):
+		self.max_width = self.total_height = 1
 		self.transparency = False
 		self.solved = False
 		self.max_lines = 2
