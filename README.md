@@ -1,5 +1,7 @@
 # 📦 Sokoban Solver and Generator
 
+[README pt-BR](https://github.com/xbandrade/sokoban-solver-generator/blob/main/README-pt-BR.md)
+
 A Sokoban puzzle generator and solver using BFS, A* and Dijkstra algorithms.
 
 Video showing the game mechanics, the generator and the solver: [Sokoban Generator and Solver](https://www.youtube.com/watch?v=l0BHKkoViII)
@@ -55,7 +57,7 @@ The `A*` algorithm is similar to the BFS algorithm, but it uses a priority queue
 It does so by setting costs to the puzzle state and the player's movements, punishing the player with high costs for a bad move and rewarding the player with lower costs for a good move.
 The state costs are defined by heuristic functions, and this solver was implemented with two different heuristics: the `Manhattan Distance` function and `Dijkstra` distance function.
 
-All three implementations check for possible deadlocks before adding the new state to the queue.
+All three implementations check for possible deadlocks (states that are impossible to solve) before adding the new state to the queue.
 
 ### ❕ Interface Buttons and Options
 - `Restart` Reset the current level to its initial state
