@@ -47,11 +47,11 @@ The player will only be able to pull boxes from their positions during the gener
 
 <img src="https://raw.githubusercontent.com/xbandrade/sokoban-solver-generator/main/img/levelclear.gif" width=80% height=80%>
 
-The algorithms used to implement the Sokoban puzzle solvers were Breadth-First Search(BFS) and A*.
+The algorithms used to implement the Sokoban puzzle solvers were `Breadth-First Search(BFS)` and `A*`.
 
-The BFS solver uses a queue to store the next states of the puzzle it needs to visit. A visited state is stored in a hashset, and BFS won't try to visit the same state twice.
+The `BFS` solver uses a queue to store the next states of the puzzle it needs to visit. A visited state is stored in a hashset, and BFS won't try to visit the same state twice.
 
-The A* algorithm is similar to the BFS algorithm, but it uses a priority queue instead of a queue, and it prioritizes moves that are more likely to solve the problem.
+The `A*` algorithm is similar to the BFS algorithm, but it uses a priority queue instead of a queue, and it prioritizes moves that are more likely to solve the problem.
 It does so by setting costs to the puzzle state and the player's movements, punishing the player with high costs for a bad move and rewarding the player with lower costs for a good move.
 The state costs are defined by heuristic functions, and this solver was implemented with two different heuristics: the `Manhattan Distance` function and `Dijkstra` distance function.
 
