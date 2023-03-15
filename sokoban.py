@@ -224,7 +224,7 @@ def main():
 	random_seed = None
 	widgets = sidebar_widgets(window)
 	while keep_playing:
-		print(f'Loading level {level}\n')
+		print(f'Loading level {level}\n' if level > 0 else 'Loading random game')
 		game_data = play_game(window, level, random_game, random_seed, **widgets)
 		keep_playing = game_data.get('keep_playing', False)
 		if not keep_playing:
