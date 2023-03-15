@@ -1,8 +1,8 @@
 # 📦 Solucionador e Gerador Sokoban
 
-Gerador de puzzles Sokoban e solucionador de puzzles usando os algoritmos BFS, A* e Dijkstra.
-
 Vídeo mostrando as mecânicas do jogo, o gerador e o solucionador: [Sokoban Generator and Solver](https://www.youtube.com/watch?v=l0BHKkoViII)
+
+Este é um gerador de puzzles e solucionador de puzzles Sokoban que utiliza os algoritmos de busca BFS, A* e Dijkstra.
 
 
 `Sokoban` é um jogo de puzzle no qual o jogador empurra caixas em um armazém, com o objetivo de colocar todas as caixas em seus objetivos.
