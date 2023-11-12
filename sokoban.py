@@ -3,7 +3,7 @@ import time
 
 import pygame
 import pygame_widgets
-
+from src.dfs import *
 from src.astar import solve_astar
 from src.bfs import solve_bfs
 from src.events import *
@@ -119,6 +119,60 @@ def play_game(window, level=1, random_game=False, random_seed=None, **widgets):
                         ('Deadlock Found!' if depth < 0 else f'Depth {depth}'), 
                         20,
                     )
+            
+            elif event.type == SOLVE_DFS_EVENT:
+                    print('Finding a solution for the puzzle\n')
+                    widgets['paths'].reset('Solving with [DFS]')
+                    show_solution = True
+                    start = time.time()
+                    solution, depth = solve_dfs(
+                        game.get_matrix(), 
+                        widget=widgets['paths'], 
+                        visualizer=widgets['toggle'].getValue()
+                    )
+                    runtime = round(time.time() - start, 5)
+                    if solution:
+                        widgets['paths'].solved = True
+                        widgets['paths'].transparency = True
+                        widgets['paths'].set_text(
+                            f'[DFS] Solution Found in {runtime}s!\n{solution}',
+                            20,
+                        )
+                        moves = play_solution(solution, game, widgets, show_solution, moves)
+                    else:
+                        widgets['paths'].solved = False
+                        widgets['paths'].set_text(
+                            '[DFS] Solution Not Found!\n' + 
+                            ('Deadlock Found!' if depth < 0 else f'Depth {depth}'), 
+                            20,
+                        )
+            elif  event.type == SOLVE_UCS_EVENT:
+                    print('Finding a solution for the puzzle\n')
+                    widgets['paths'].reset('Solving with [UCS]')
+                    show_solution = True
+                    start = time.time()
+                    solution, depth = solve_ucs(
+                        game.get_matrix(), 
+                        widget=widgets['paths'], 
+                        visualizer=widgets['toggle'].getValue()
+                    )
+                    runtime = round(time.time() - start, 5)
+                    if solution:
+                        widgets['paths'].solved = True
+                        widgets['paths'].transparency = True
+                        widgets['paths'].set_text(
+                            f'[UCS] Solution Found in {runtime}s!\n{solution}',
+                            20,
+                        )
+                        moves = play_solution(solution, game, widgets, show_solution, moves)
+                    else:
+                        widgets['paths'].solved = False
+                        widgets['paths'].set_text(
+                            '[UCS] Solution Not Found!\n' + 
+                            ('Deadlock Found!' if depth < 0 else f'Depth {depth}'), 
+                            20,
+                        )
+		    
             elif event.type == SOLVE_ASTARMAN_EVENT:
                 print('Finding a solution for the puzzle\n')
                 widgets['paths'].reset('Solving with [A*]')

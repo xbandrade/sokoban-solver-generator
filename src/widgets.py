@@ -40,6 +40,21 @@ def sidebar_widgets(window):
 		onClick=lambda: pygame.event.post(pygame.event.Event(SOLVE_BFS_EVENT)),
 		borderColor='black', borderThickness=2,
 	)
+		# modify
+	dfs_button = Button(
+		window, 1055, 500, 130, 40, text='Solve DFS', radius=5,
+		font=pygame.font.SysFont('Verdana', 18, bold=True),
+		onClick=lambda: pygame.event.post(pygame.event.Event(SOLVE_DFS_EVENT)),
+		borderColor='black', borderThickness=2,
+	)
+	ucs_button = Button(
+		window, 1055, 550, 130, 40, text='Solve ucs', radius=5,
+		font=pygame.font.SysFont('Verdana', 18, bold=True),
+		onClick=lambda: pygame.event.post(pygame.event.Event(SOLVE_UCS_EVENT)),
+		borderColor='black', borderThickness=2,
+	)
+
+	#modify
 	astarman_button = Button(
 		window, 1055, 340, 130, 40, text='A* Manhattan', radius=5,
 		font=pygame.font.SysFont('Verdana', 14, bold=True),
